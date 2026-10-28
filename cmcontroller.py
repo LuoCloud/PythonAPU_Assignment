@@ -8,22 +8,18 @@
 #database file
 
 #Master dictionary for courses
-coursedata = {}
+coursedata = {"testing":{}}
 
 #Function for adding courses
 def addcourse():
-    courseamount = int(input("How many courses would you like to add?: "))
-    if courseamount < 0:
-        print("Course amount cannot be negative.")
+    while True:
         courseamount = int(input("How many courses would you like to add?: "))
-    elif courseamount >= 1:
-        pass
-    elif courseamount > 3:
-        print("Please add a few courses at a time.")
-        courseamount = int(input("How many courses would you like to add?: "))
-    else:
-        print("Value is invalid.")
-        courseamount = int(input("How many courses would you like to add?: "))
+        if courseamount < 0:
+            print("Course amount cannot be negative.")
+        elif courseamount > 3:
+            print("Please add a few courses at a time.")
+        else:
+            break
 
 
     #Important to note that courseid serves as the unique key in the dictionary
@@ -70,7 +66,6 @@ def addcourse():
             print("Provide a valid course fee.")
         elif coursefee < 0:
             print("Course fee cannot be negative.")
-
         else:
             pass
             #Add coursefee as value into storage with RM sign
@@ -102,7 +97,7 @@ def addcourse():
             courseamount -= 1
             print("\nCourses Successfully Added.\n"
                   "Returning to Main Menu...\n")
-            coursemenu()
+            return
 
 #Function for updating courses (Needs to be able to pinpoint a field and edit it)
 def updatecourse():
@@ -114,10 +109,10 @@ def updatecourse():
             print("Course is not listed in database. Try again.")
         elif courseid_selection in coursedata:
             break
-    courseedit_selection = courseeditmenu()
 
     #Block for course name editing
     while True:
+        courseedit_selection = courseeditmenu()
         while courseedit_selection == "1":
             newcoursename = input("New Course Name: ")
 
@@ -193,8 +188,7 @@ def updatecourse():
 
         if courseedit_selection.upper() == "Q":
             print("\nReturning to Main Menu...\n")
-            coursemenu()
-            break
+            return
 
 #Course edit menu for updatecourse() function ^^^
 def courseeditmenu():
@@ -210,12 +204,55 @@ def courseeditmenu():
 
 #Function for deleting courses
 def deletecourse():
-    coursedata.__delitem__(courseid)
+    coursedelete_menuoption = coursedeletemenu()
+
+    #Making sure that its 1 or 2 as the input
+    while coursedelete_menuoption != "1" and coursedelete_menuoption != "2":
+        print("Input is invalid. Try again")
+        coursedelete_viewcourse = input("Would you like to view courses? (Y/N): ")
+        if coursedelete_viewcourse == "1" or coursedelete_viewcourse == "2":
+            break
+
+    #Scenario for 1 or 2 input options
+    if coursedelete_menuoption == "1":
+        while True:
+            coursedelete_viewcourse = input("Would you like to view courses? (Y/N): ")
+            if coursedelete_viewcourse.upper() == "Y":
+                print("Retrieving courses...")
+                viewcourse()
+                break
+            elif coursedelete_viewcourse.upper() == "N":
+                print("Returning...")
+                coursedeletemenu() #Ended off here where it only checks once
+                break
+    elif coursedelete_menuoption == "2":
+        while True:
+            deletecourse_input = input("Which course would you like to delete?: ")
+            if deletecourse_input not in coursedata:
+                print("Course is not in database. Try Again.")
+            elif deletecourse_input == "":
+                print("Input cannot be empty.")
+            elif deletecourse_input.isdigit():
+                print("Invalid Input.")
+            else:
+                break
+        if deletecourse_input in coursedata and deletecourse_input != "":
+            deletecourse_confirmation = input("Are you sure you would like to delete this course? (Y/N): ")
+            if deletecourse_confirmation.upper() == "Y":
+                coursedata.__delitem__(deletecourse_input)
+                print("\nCourse has been removed. Returning to Main Menu...\n")
+                return
+            elif deletecourse_confirmation.upper() == "N":
+                print("\nCourse deletion cancelled. Returning to Main Menu...\n")
+                return
 
 #Course delete menu for deletecourse() function ^^^
 def coursedeletemenu():
-    print("Select a course to delete")
-    viewcourse()
+    print("\n---Course Delete Menu---\n"
+          "Input 1 to view courses\n"
+          "Input 2 to delete course\n")
+    coursedelete_menuoption = input("Selection: ")
+    return coursedelete_menuoption
 
 #Function for viewing courses
 def viewcourse():
@@ -223,29 +260,35 @@ def viewcourse():
 
 #Menu interface
 def coursemenu():
-    print(
-        "---- Awesome Interface for courses!! ----\n"
-        "Press 1 to add a course\n"
-        "Press 2 to edit a course\n"
-        "Press 3 to remove a course\n"
-    )
-    viewcourse_selection = input("Choose an option: ")
+    while True:
+        print(
+            "---- Awesome Interface for courses!! ----\n"
+            "Press 1 to add a course\n"
+            "Press 2 to edit a course\n"
+            "Press 3 to remove a course\n"
+            "Press 4 to return to LMS Menu\n"
+        )
 
-    if viewcourse_selection == "1":
-        addcourse()
-    elif viewcourse_selection == "2":
-        updatecourse()
-    elif viewcourse_selection == "3":
-        deletecourse()
-    elif viewcourse_selection.isalpha():
-        print("Option cannot contain letters.")
         viewcourse_selection = input("Choose an option: ")
-    elif viewcourse_selection == "":
-        print("Option cannot be empty.")
-        viewcourse_selection = input("Choose an option: ")
-    else:
-        print("Invalid option")
-        viewcourse_selection = input("Choose an option: ")
+        if viewcourse_selection == "1":
+            addcourse()
+        elif viewcourse_selection == "2":
+            updatecourse()
+        elif viewcourse_selection == "3":
+            deletecourse()
+            #Return to LTs LMS Menu
+        elif viewcourse_selection.isalpha():
+            print("Option cannot contain letters.")
+            viewcourse_selection = input("Choose an option: ")
+        elif viewcourse_selection == "":
+            print("Option cannot be empty.")
+            viewcourse_selection = input("Choose an option: ")
+        else:
+            print("Invalid option")
+            viewcourse_selection = input("Choose an option: ")
+        if viewcourse_selection == "4":
+            print("Returning to LMS Menu...")
+            break
 
 coursemenu()
 
