@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import os
-from main import menu
+from main import mainmenu
 
 user_file = 'users.txt'
 
@@ -8,7 +8,7 @@ def users_exists(username):
     if not os.path.exists(user_file):
         return False
     with open(user_file, 'r') as f:
-        return any(line.startwith()(f"{username}:") for line in f)
+        return any(line.startswith()(f"{username}:") for line in f)
 
 def register():
     username = input("Enter username: ")
