@@ -8,7 +8,7 @@ def users_exists(username):
     if not os.path.exists(user_file):
         return False
     with open(user_file, 'r') as f:
-        return any(line.startswith()(f"{username}:") for line in f)
+        return any(line.startswith(f"{username}:") for line in f)
 
 def register():
     username = input("Enter username: ")
@@ -23,15 +23,18 @@ def register():
 def login():
     username = input("Enter username: ")
     password = input("Enter password: ")
+    if not os.path.exists(user_file):
+        print("Login Failed.")
+        return
     with open(user_file, 'r') as f:
         for line in f:
             if line.strip() == f"{username}:{password}":
                 print("Login Success!")
-                menu()
+                mainmenu(username)
                 return
     print("Login Failed.")
 
-def main():
+def loginmenu():
     options = {'1':register, '2':login, '3':exit}
     while True:
         print("Welcome to XXXX Login Menu!")
@@ -42,4 +45,5 @@ def main():
             action()
         else:
             print("Invalid option")
-main()
+if __name__ == "__main__":
+    loginmenu()

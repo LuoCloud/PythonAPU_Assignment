@@ -1,0 +1,2 @@
+MemberID|Name|Age|ContactNumber|Email|StartDate
+M0001|li|18|3456789|456@gmail.com|2026-10-30

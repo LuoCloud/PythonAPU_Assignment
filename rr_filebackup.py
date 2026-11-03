@@ -1,35 +1,33 @@
 #!/usr/bin/python3
-import shutil
 import os
-
+import shutil
+ 
+ 
+def backup_name(txtfile):
+    # resources.txt -> resources_backup.txt
+    return txtfile.replace(".txt", "") + "_backup.txt"
+ 
+ 
 def save(txtfile):
-    src = txtfile
-    dest = txtfile.replace(".txt", "") + "_backup.txt"
-    shutil.copyfile(src, dest)
-
+    #Copy the file to its backup. Call this BEFORE changing the file.
+    backup = backup_name(txtfile)
+    if os.path.exists(txtfile):
+        shutil.copyfile(txtfile, backup)
+    else:
+        open(backup, "w").close()      # file didn't exist yet: backup = empty
+ 
+ 
 def undo(txtfile):
-    src = txtfile
-    dest = txtfile - ".txt" + "_backup.txt"
-    shutil.copyfile(dest, src)
-
-def delete(txtfile):
-    filename = input("Enter the filename: ")
-    confirm = input(f"Delete {filename}? (yes / no) : ")
-    while confirm not in ("Yes", "yes", "No", "no", "Quit", "quit", "q"):
-        print("Please confirm.")
-        confirm = input(f"Delete {filename}? (yes / no) : ")
-    if confirm in ("Yes", "yes"):
-        os.remove(txtfile)
-        print(f"{txtfile} deleted.")
-    elif confirm in ("No", "no"):
-        print("Cancelled.")
-        return
-    elif confirm in ("Quit", "quit", "q"):
-        print("Exited.")
-        return
+    #Restore the file from its backup. Returns True if it worked.
+    backup = backup_name(txtfile)
+    if os.path.exists(backup):
+        shutil.copyfile(backup, txtfile)
+        return True
+    return False
 
 def new(txtfile):
     with open(txtfile, 'w') as file:
         file.write('Created.')
 
-
+def filemenu(username):
+    print("File.")
