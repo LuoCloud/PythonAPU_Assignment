@@ -7,7 +7,7 @@ LOG_FILE = "activity.log"
 
 def log_action(action_type, details):
     """
-    write a log entry into activity.log with timestamp for auditin.
+    write a log entry into activity.log with timestamp for auditing.
     format: [YYYY-MM-DD HH:MM:SS] [ACTION_TYPE] Details
     """
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
