@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import os
 import rr_filebackup
+from other import *
 # from main import mainmenu
 
 RESOURCE_FILE = "resources.txt"
@@ -140,6 +141,7 @@ def back(username):
     print("\nLoading...")
     print("---")
     print("Back to Resource Menu.")
+    resourcemenu(username)
 
 # ---- Main Functions ---- #
 # ---- Create ---- #
@@ -175,23 +177,29 @@ def create(username):
 def read(username):
         records = load()
         print("Please enter...")
-        choice = input("(a)ll, (s)earch by ID/name/type, (b)ack: ")
+        choice = input("(a)ll, (s)earch by ID/name/type, (f)ilter, (b)ack: ")
         while choice not in ("q", "Q"):
-            while choice not in ("a", "A", "s", "S", "b", "B"):
-                choice = input("Please enter (a)ll / (s)earch / (b)ack: ")
+            while choice not in ("a", "A", "s", "S", "b", "B", "f", "F"):
+                choice = input("Please enter (a)ll / (s)earch / (f)ilter / (b)ack: ")
             if choice in ("a", "A"):
                 openfile()
             elif choice in ("b", "B"):
                 back(username)
                 return
+            elif choice in ("f", "F"):
+                filtermenu(username)
+                return
             elif choice in ("s", "S"):
                 keyword = input("Search for: ").strip().lower()
+                if keyword == "b":
+                    back(username)
+                    return
                 matches = []
                 for line in records:
                     if keyword in line[0].lower() or keyword in line[1].lower() or keyword in line[2].lower():
                         matches.append(line)
                 show_tables(matches)
-            choice = input("(a)ll, (s)earch by ID/name/type, (b)ack: ")
+            choice = input("(a)ll, (s)earch by ID/name/type, (f)ilter, (b)ack: ")
         exit
 
 # ---- Edit ---- #
@@ -223,7 +231,13 @@ def update(username):
                 print("Invalid choice.")
                 return
             index = int(pick) - 1
-            new_value = get(f"New {FIELDS[index]}: ", FIELDS[index])
+            if pick == "5":
+                new_value = get(f"New {FIELDS[index]}: ", FIELDS[index])
+                while new_value not in ("Unavailable", "Available"):
+                    print("Format Error.")
+                    new_value = get("Please type (Available) / (Unavailable): ")
+            else:
+                new_value = get(f"New {FIELDS[index]}: ", FIELDS[index])
             if index == 0 and find(records, new_value) is not None:
                 print("That ID already exists. Nothing changed.")
                 return
@@ -253,7 +267,7 @@ def delete(username):
                 rcid =  input("Enter existing Resource ID: ").strip()
                 record = find(records, rcid)
                 print("PRESS 'Q' to exit.")
-                if choice in ("q", "Q"):
+                if rcid in ("q", "Q"):
                     return
             if confirm(f"Delete {record[1]} ({record[0]})?"):
                 records.remove(record)

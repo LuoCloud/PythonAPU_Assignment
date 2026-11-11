@@ -7,7 +7,7 @@ from course import coursemenu
 from enrollment import enrollmentmenu
 from resources import resourcemenu
 from rr_filebackup import filemenu
-from info import infomenu 
+from other import *
 
 def mainmenu(username):
     print("\n----Welcome!----")
@@ -34,7 +34,7 @@ def mainmenu(username):
             resourcemenu(username)
             break
         elif selection in ("o", "O"):
-            print("(f)ile | (i)nfo | (l)og out")
+            print("(f)ilter | (i)nfo | (l)og out")
             choice = input("Select: ")
             while choice not in ("q", "Q"):
                 while choice not in ("f", "F", "i", "I", "l", "L", "q", "Q"):
@@ -47,7 +47,8 @@ def mainmenu(username):
                     infomenu(username)
                     break
                 elif choice in ("l", "L"):
-                    print("Logged out.")
+                    from login import loginmenu
+                    loginmenu()
                     break
             break
     print("Thank you. Goodbye! (Main)")
