@@ -46,6 +46,7 @@ def mainmenu(username):
                     return
                 elif choice in ("i", "I"):
                     infomenu(username)
+                    mainmenu(username)
                     break
                 elif choice in ("l", "L"):
                     from login import loginmenu
