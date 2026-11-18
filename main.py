@@ -5,7 +5,7 @@ import os
 from member import membermenu
 from course import coursemenu
 from enrollment import enrollmentmenu
-from resources import resourcemenu
+from resources import resourcemenu, filtering
 from rr_filebackup import filemenu
 from other import *
 
@@ -41,8 +41,9 @@ def mainmenu(username):
                     print("Please enter f, i or l.")
                     choice = input("Select: ")
                 if choice in ("f", "F"):
-                    filemenu(username)
-                    break
+                    filtering(username)
+                    mainmenu(username)
+                    return
                 elif choice in ("i", "I"):
                     infomenu(username)
                     break

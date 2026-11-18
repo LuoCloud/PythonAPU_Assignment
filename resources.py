@@ -88,9 +88,15 @@ def load():
     try:
         with open(RESOURCE_FILE, "r") as file:
             for line in file:
-                line = line.strip()
+                line = line.strip().strip("|")
                 if line:
-                    records.append(line.split("|"))
+                    parts = line.split("|")
+                    for i in range(len(parts)):
+                        parts[i] = parts[i].strip()
+                    if len(parts) != len(FIELDS):
+                        print("Skipped a line with wrong format:", line)
+                        continue
+                    records.append(parts)
     except FileNotFoundError:
         pass
     finally:
@@ -143,6 +149,85 @@ def back(username):
     print("Back to Resource Menu.")
     resourcemenu(username)
 
+def get_status(prompt):
+    status = get(prompt, "Status")
+    while status not in ("AVAILABLE", "UNAVAILABLE"):
+        print("Format Error. Please type Available / Unavailable.")
+        status = get(prompt, "Status")
+    return status
+
+# ---- Filter by more than one field ---- #
+def filtering(username):
+    # the data you can choose from; only Resources has a filter so far
+    options = ["Members", "Courses", "Enrollments", "Resources"]
+    while True:
+        print("\n----! FILTER !----")
+        print("Which data do you want to filter?")
+        for i in range(len(options)):
+            print(f" {i + 1}. {options[i]}")
+        choice = input("Number (b to go back): ").strip()
+        if choice in ("b", "B"):
+            return
+        if not choice.isdigit() or not 1 <= int(choice) <= len(options):
+            print("Invalid choice.")
+        elif options[int(choice) - 1] == "Resources":
+            filter_resources()
+        else:
+            print(f"{options[int(choice) - 1]} filter is not available yet.")
+
+def filter_resources():
+    records = load()
+    print("Please enter...")
+    choice = input("(c)ontinue, (b)ack: ")
+    while choice not in ("b", "B"):
+        if choice in ("c", "C"):
+            print("Which fields do you want to filter by? (e.g. 3,5 for Type + Status)")
+            for i in range(len(FIELDS)):
+                print(f" {i + 1}. {FIELDS[i]}")
+            raw = input("Numbers separated by commas: ").strip()
+
+            # turn "3,5" into the list of field names ["Type", "Status"]
+            picks = []
+            valid = True
+            for part in raw.split(","):
+                part = part.strip()
+                if part.isdigit() and 1 <= int(part) <= len(FIELDS):
+                    if FIELDS[int(part) - 1] not in picks:
+                        picks.append(FIELDS[int(part) - 1])
+                else:
+                    valid = False
+
+            if not valid or len(picks) == 0:
+                print("Invalid choice.")
+            else:
+                # dictionary of conditions:  field name -> value to look for
+                conditions = {}
+                for field in picks:
+                    value = ""
+                    while value == "":
+                        value = input(f"{field}: ").strip().lower()
+                    conditions[field] = value
+
+                # keep a record only if it matches EVERY condition
+                results = []
+                for record in records:
+                    match = True
+                    for field in conditions:
+                        cell = record[FIELDS.index(field)].lower()
+                        if field == "Quantity" or field == "Status":    # exact match
+                            if cell != conditions[field]:
+                                match = False
+                        elif conditions[field] not in cell:             # partial match
+                            match = False
+                    if match:
+                        results.append(record)
+
+                show_tables(results)
+                print(len(results), "result(s) found.")
+        else:
+            print("Invalid command.")
+        choice = input("(c)ontinue, (b)ack: ")
+
 # ---- Main Functions ---- #
 # ---- Create ---- #
 def create(username):
@@ -166,7 +251,7 @@ def create(username):
             name = get("Resource Name: ", "Resource Name")
             rtype = get("Category: ", "Category")
             qty = get("Quantity: ", "Quantity")
-            status = get("Status (e.g. Available): ", "Status")
+            status = get_status("Status (Available / Unavailable): ")
             records.append([rcid, name, rtype, qty, status])
             save(records)
             print("Resource added!")
@@ -187,7 +272,8 @@ def read(username):
                 back(username)
                 return
             elif choice in ("f", "F"):
-                filtermenu(username)
+                filtering(username)
+                back(username)
                 return
             elif choice in ("s", "S"):
                 keyword = input("Search for: ").strip().lower()
@@ -232,10 +318,7 @@ def update(username):
                 return
             index = int(pick) - 1
             if pick == "5":
-                new_value = get(f"New {FIELDS[index]}: ", FIELDS[index])
-                while new_value not in ("Unavailable", "Available"):
-                    print("Format Error.")
-                    new_value = get("Please type (Available) / (Unavailable): ")
+                new_value = get_status("New Status (Available / Unavailable): ")
             else:
                 new_value = get(f"New {FIELDS[index]}: ", FIELDS[index])
             if index == 0 and find(records, new_value) is not None:
@@ -327,6 +410,6 @@ def resourcemenu(username):
                 delete(username)
                 break
     print("Program executed.(Resource)")
-if __name__ == "__main__":
-    username = input("Username: ")
-    resourcemenu(username)
+# if __name__ == "__main__":
+#     username = input("Username: ")
+#     resourcemenu(username)
