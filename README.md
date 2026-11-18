@@ -8,7 +8,7 @@ A command-line management system built in Python for managing members, courses, 
 
 ### Mandatory Functions
 * **Wong Li Ting (TP174742):** Resources Management, Main Menu
-* **Chin Jun Xiang (TPXXXXXX):** Member Management, Main Menu
+* **Chin Jun Xiang (TPXXXXXX):** Member Management
 * **Lee Jun Xuan (TPXXXXXX):** Course Management
 * **Yap Kai Bin (TPXXXXXX):** Enrollment Management
 
