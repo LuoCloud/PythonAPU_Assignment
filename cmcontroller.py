@@ -1,132 +1,162 @@
-#Adding courses (Ask for module, course, etc.)
-#Suggested fields: Course ID, Course Name, Instructor, Duration, Fee, Maximum Capacity.
+# Note: coursedata is the local storage (volatile), cmstorage.txt is the external storage (non-volatile).
+# Weak warnings in the top are just broad exception clauses from try, except.
+# Dictionary keys for coursedata: "courname", "courinstructor", "courduration", "courfee", "courcapacity"
 
-#Updating existing courses (be able to update the
-#database file
+# Hiearchical Imports
+from cmdatabase import save_coursedata
+from cmdatabase import extra_maximumcourse
 
-#Delete feature that removes the data from the
-#database file
+# Function for adding courses
+def addcourse(coursedata):
 
-#its jason say hi
-import json
-from textwrap import indent
-
-#Master dictionary for courses
-coursedata = {"testing":{}}
-
-#Function for adding courses
-def addcourse():
-    #Asking for course quantity to add
+    #Asking for course quantity to add, then validating
     while True:
-        courseamount = int(input("How many courses would you like to add?: "))
-        if courseamount < 0:
-            print("Course amount cannot be negative.")
-        elif courseamount > 3:
-            print("Please add a few courses at a time.")
-        else:
-            break
+        try:
+            courseamount = int(input("\nHow many courses would you like to add?: "))
+            # Checks if the courses will hit the maximum (20 courses)
+            if extra_maximumcourse(courseamount) == "Limit reached":
+                return
+            if courseamount < 0:
+                print("Course amount cannot be negative. Try again.")
+            elif courseamount == 0:
+                print("Course amount cannot be 0. Try again.")
+            # Avoiding bulk course adding.
+            elif courseamount > 3:
+                print("Please add a few courses at a time. Try again.")
+            else:
+                print("Successfully inputed!")
+                break
+        except:
+            print("Input must be a number between 1-3. Try again.")
 
 
-    #Important to note that courseid serves as the unique key in the dictionary
-    #While others will be the values to the key (courseid)
+    #As long as the course amount is not 0, loop through inputs
     while courseamount != 0:
         while True:
-            courseid = str(input("Course ID (e.g. (092026-MAL)): "))
-            if courseid == "":
-                print("Provide a valid course ID.")
+            courseid = str(input("\nCourse ID (e.g. (092026-MAL)): "))
+            if courseid.strip() == "":
+                print("Provide a valid course ID. Try again.")
             elif courseid in coursedata:
-                print("Course already exists")
+                print("Course already exists. Use another ID.")
             else:
+                print("Successfully inputed!")
                 break
 
         while True:
-            coursename = str(input("Course Name (e.g. Programming With Python): "))
-            if coursename == "":
-                print("Provide a valid course name.")
-                str(input("Course Name (e.g. Programming With Python): "))
+            coursename = str(input("\nCourse Name (e.g. Programming With Python): "))
+            if coursename.strip() == "":
+                print("Provide a valid course name. Try again.")
             else:
-                #Place coursename as value in storage then
+                print("Successfully inputed!")
                 break
 
         while True:
-            courseinstructor = str(input("Instructor (e.g. Dr Masrina): "))
-            if courseinstructor == "":
+            courseinstructor = str(input("\nInstructor (e.g. Dr Masrina): "))
+            if courseinstructor.strip() == "":
                 print("Provide a valid course instructor.")
-            else:
-                #Add course instructor as value to storage then
+            elif len(courseinstructor) > 0:
+                print("Successfully inputed!")
                 break
+            else:
+                print("Invalid input. Try again.")
+
         while True:
-            coursedur = str(input("Course Duration (e.g. 4 Months): "))
-            if coursedur == "":
+            coursedur = str(input("\nCourse Duration (e.g. 4 Months): "))
+            if coursedur.strip() == "":
                 print("Provide a valid course duration.")
-            else:
-                #Add course duration as value to storage then
+            elif coursedur.isalpha():
+                print("Provide a valid course duration.")
+            elif len(coursedur) < 15:
+                print("Successfully inputed!")
                 break
+            else:
+                print("Invalid input. Try again.")
 
         while True:
-            coursefee = float(input("Course Fee (e.g. 3000): "))
-            if coursefee == "":
-                print("Provide a valid course fee.")
-            elif coursefee < 0:
-                print("Course fee cannot be negative.")
-            else:
-                #Add coursefee as value into storage with RM sign then
-                break
+            try:
+                coursefee = float(input("\nCourse Fee (e.g. 3000): "))
+                if coursefee < 0:
+                    print("Course fee cannot be negative.")
+                else:
+                    coursefee = f"RM{coursefee:.2f}"
+                    print("Successfully inputed!")
+                    break
+            except:
+                print("Input must be a number. Try again.")
 
         while True:
-            coursecap = int(input("Maximum Student Capacity (e.g. 30): "))
-            if coursecap == "":
-                print("Provide a valid course capacity.")
-            elif coursecap < 0:
-                print("Course capacity cannoy be negative.")
-            else:
-                #Add course capacity as value into storage then
-                break
+            try:
+                coursecap = int(input("\nMaximum Student Capacity (e.g. 30): "))
+                if coursecap < 0:
+                    print("Course capacity cannot be negative.")
+                else:
+                    print("Successfully inputed!")
+                    break
+            except:
+                print("Input must be a number. Try again.")
 
-        #Adding information into storage
+        # Storing inputs into coursedata
         courseinputs = {
             courseid : {
-                "Course Name: " : coursename ,
-                "Course Instructor: " : courseinstructor ,
-                "Course Duration: " : coursedur ,
-                "Course Fee: " : coursefee ,
-                "Course Capacity" : coursecap
-            }
-        }
-
-        #Counter function to track if all courses have been inputed
+                "courname" : coursename,
+                "courinstructor" : courseinstructor,
+                "courduration" : coursedur,
+                "courfee" : coursefee,
+                "courcapacity" : coursecap,
+                        }}
         coursedata.update(courseinputs)
+
+        #Store course
         if courseamount > 1:
+            save_coursedata(coursedata)
             courseamount -= 1
             print("\nProvide details for the next course.\n")
-            with open("cmstorage.json", "w") as file:
-                json.dump(courseinputs, file, indent=4)
         else:
-            courseamount -= 1
-            print("\nCourses Successfully Added.\n"
-                  "Returning to Main Menu...\n")
-            with open("cmstorage.json", "w") as file:
-                json.dump(courseinputs, file, indent=4)
-            return
+            save_coursedata(coursedata)
+# Adds 1 or more courses into cmstorage.txt
 
-#Course edit menu for updatecourse() function ^^^
+# Course edit menu for updatecourse()
 def courseeditmenu():
-    print("Which section would you like to edit?\n"
+    print("\nWhich section would you like to edit?\n"
           "Input 1 to edit Course Name\n"
           "Input 2 to edit Course Instructor\n"
           "Input 3 to edit Course Duration\n"
           "Input 4 to edit Course Fee\n"
           "Input 5 to edit Course Capacity\n"
           "Input Q to return to Main Menu")
-    courseedit_selection = input("Selection: ")
-    #Returns the input for updatecourse function
-    return courseedit_selection
 
-#Function for updating courses (Needs to be able to pinpoint a field and edit it)
-def updatecourse():
+    while True:
+        courseedit_selection = input("\nSelection: ")
+
+        # Validation to ensure correct value is given to update function
+        if courseedit_selection.upper() == "Q":
+            return courseedit_selection
+        elif courseedit_selection == "1":
+            return courseedit_selection
+        elif courseedit_selection == "2":
+            return courseedit_selection
+        elif courseedit_selection == "3":
+            return courseedit_selection
+        elif courseedit_selection == "4":
+            return courseedit_selection
+        elif courseedit_selection == "5":
+            return courseedit_selection
+        else:
+            print("Invalid input. Try again.")
+# Displays the course edit function menu
+
+# Function for updating courses
+def updatecourse(coursedata):
+
+    #Checking if memory is empty
+    if coursedata == {}:
+        print("There are currently no courses in storage.\n"
+              "Add a course, or contact an Admin for further support")
+        return
+
     while True:
         #Asking for course id to make changes
-        courseid_selection = input("Please insert your Course ID to edit: ")
+        courseid_selection = input("\nPlease insert your Course ID to edit: ")
         if courseid_selection.isdigit():
             print("Invalid Course ID")
         elif courseid_selection not in coursedata:
@@ -138,106 +168,141 @@ def updatecourse():
     while True:
         courseedit_selection = courseeditmenu()
         while courseedit_selection == "1":
-            newcoursename = input("New Course Name: ")
+            newcoursename = input("\nNew Course Name: ")
 
             #Validation block
-            if newcoursename == "":
+            if newcoursename.strip() == "":
                 print("Input is empty, please try again.")
             elif newcoursename.isdigit():
                 print("Input cannot be a number, please try again.")
             else:
-                coursedata[courseid_selection]["Course Name: "] = newcoursename
-                print("\nCourse Name Successfully Updated.\n")
+                coursedata[courseid_selection]["courname"] = newcoursename
+                print("\nCourse Name Successfully Updated.")
                 break
 
         #Block for course instructor editing
         while courseedit_selection == "2":
-            newcourseinstructor = input("New Course Instructor: ")
+            newcourseinstructor = input("\nNew Course Instructor: ")
 
             #Validation block
-            if newcourseinstructor == "":
+            if newcourseinstructor.strip() == "":
                 print("Input is empty, please try again.")
             elif newcourseinstructor.isdigit():
                 print("Input cannot be a number, please try again.")
             else:
-                coursedata[courseid_selection]["Course Instructor: "] = newcourseinstructor
-                print("\nCourse Instructor Successfully Updated.\n")
+                coursedata[courseid_selection]["courinstructor"] = newcourseinstructor
+                print("\nCourse Instructor Successfully Updated.")
                 break
 
         #Block for course duration editing
         while courseedit_selection == "3":
-            newcourseduration = input("New Course Duration: ")
+            newcourseduration = input("\nNew Course Duration: ")
 
             #Validation block
-            if newcourseduration == "":
+            if newcourseduration.strip() == "":
                 print("Input is empty, please try again.")
             elif newcourseduration.isdigit():
                 print("Input cannot be a number, please try again.")
             else:
-                coursedata[courseid_selection]["Course Duration: "] = newcourseduration
-                print("\nCourse Duration Successfully Updated.\n")
+                coursedata[courseid_selection]["courduration"] = newcourseduration
+                print("\nCourse Duration Successfully Updated.")
                 break
 
         #Block for course fee editing
         while courseedit_selection == "4":
-            newcoursefee = input("New Course Fee: ")
+            try:
+                newcoursefee = float(input("\nNew Course Fee: "))
 
-            #Validation block
-            if newcoursefee == "":
-                print("Input is empty, please try again.")
-            elif newcoursefee.isalpha():
-                print("Input cannot be a letter, please try again.")
-            else:
-                coursedata[courseid_selection]["Course Fee: "] = newcoursefee
-                print("\nCourse Fee Successfully Updated.\n")
-                break
+                #Validation block
+                if newcoursefee < 0:
+                    print("Input cannot be negative. Try again.")
+                else:
+                    newcoursefee = f"RM{newcoursefee:.2f}"
+                    coursedata[courseid_selection]["courfee"] = newcoursefee
+                    print("\nCourse Fee Successfully Updated.")
+                    break
+            except:
+                print("Please input a number. Try again.")
 
         #Block for course capacity editing
         while courseedit_selection == "5":
-            newcoursecapacity = input("New Course Capacity: ")
+            try:
+                newcoursecapacity = int(input("\nNew Course Capacity: "))
 
-            #Validation block
-            if newcoursecapacity == "":
-                print("Input is empty, please try again.")
-            elif newcoursecapacity.isalpha():
-                print("Input cannot be a letter, please try again.")
-            else:
-                coursedata[courseid_selection]["Course Capacity"] = newcoursecapacity
-                print("\nCourse Capacity Successfully Updated.\n")
-                break
+                #Validation block
+                if "" in newcoursecapacity:
+                    print("Input is empty, please try again.")
+                elif newcoursecapacity < 0:
+                    print("Course capacity cannot be a negative value. Try again.")
+                else:
+                    coursedata[courseid_selection]["courcapacity"] = newcoursecapacity
+                    print("\nCourse Capacity Successfully Updated.")
+                    break
+            except:
+                print("Please input a number. Try again.")
 
         #Return to menu function
         if courseedit_selection.upper() == "Q":
             print("\nReturning to Main Menu...\n")
-            return
+            #Save to external file
+            save_coursedata(coursedata)
+            break
+# Allows for pinpointing within the dictionary to make changes
 
-#Function for deleting courses
-def deletecourse():
-    #Calls menu for deletecourse
+# Course delete menu for deletecourse()
+def coursedeletemenu():
+    print("\n---Course Delete Menu---\n"
+          "Input 1 to view courses\n"
+          "Input 2 to delete course\n")
+
+    while True:
+        coursedelete_menuoption = input("Selection: ")
+
+        # Validation to ensure correct value is given to update function
+        if coursedelete_menuoption.upper() == "Q":
+            return coursedelete_menuoption
+        elif coursedelete_menuoption == "1":
+            return coursedelete_menuoption
+        elif coursedelete_menuoption == "2":
+            return coursedelete_menuoption
+        else:
+            print("Invalid input. Try again.")
+# Displays the delete course function menu
+
+# Function for deleting courses
+def deletecourse(coursedata):
+
+    #Checking if memory is empty
+    if coursedata == {}:
+        print("There are currently no courses in storage.\n"
+              "Add a course, or contact an Admin for further support")
+        return
+
+    # Summoning the menu and collecting its input
     coursedelete_menuoption = coursedeletemenu()
 
-    #Validation for menu input
+    # Validation for menu input
     #Making sure that its 1 or 2 as the input
     while coursedelete_menuoption != "1" and coursedelete_menuoption != "2":
         print("Input is invalid. Try again")
-        coursedelete_viewcourse = input("Would you like to view courses? (Y/N): ")
-        if coursedelete_viewcourse == "1" or coursedelete_viewcourse == "2":
-            break
+        coursedelete_menuoption = coursedeletemenu()
 
-    #Scenario 1, view
+    # Scenario 1, view
     if coursedelete_menuoption == "1":
         while True:
-            coursedelete_viewcourse = input("Would you like to view courses? (Y/N): ")
-            if coursedelete_viewcourse.upper() == "Y":
-                print("Retrieving courses...")
-                viewcourse()
-                break
-            elif coursedelete_viewcourse.upper() == "N":
-                print("Returning...")
-                coursedeletemenu() #Ended off here where it only checks once
-                break
+            try:
+                coursedelete_viewcourse = input("Would you like to view courses? (Y/N): ")
+                if coursedelete_viewcourse.upper() == "Y":
+                    print("Retrieving courses...")
+                    viewcourse(coursedata)
+                    break
+                elif coursedelete_viewcourse.upper() == "N":
+                    print("Proceeding to deletion...")
+                    break
+            except:
+                print("Invalid input. Try again.")
 
-    #Scenario 2, delete
+    # Scenario 2, delete
     elif coursedelete_menuoption == "2":
         while True:
             deletecourse_input = input("Which course would you like to delete?: ")
@@ -250,78 +315,40 @@ def deletecourse():
             else:
                 break
 
-        #Delete confirmation
-        if deletecourse_input in coursedata and deletecourse_input != "":
-            deletecourse_confirmation = input("Are you sure you would like to delete this course? (Y/N): ")
-            if deletecourse_confirmation.upper() == "Y":
-                coursedata.__delitem__(deletecourse_input)
-                print("\nCourse has been removed. Returning to Main Menu...\n")
-                return
-            elif deletecourse_confirmation.upper() == "N":
-                print("\nCourse deletion cancelled. Returning to Main Menu...\n")
-                return
-
-#Course delete menu for deletecourse() function ^^^
-def coursedeletemenu():
-    print("\n---Course Delete Menu---\n"
-          "Input 1 to view courses\n"
-          "Input 2 to delete course\n")
-    coursedelete_menuoption = input("Selection: ")
-    return coursedelete_menuoption
-
-#Function for viewing courses
-def viewcourse():
-    with open("cmstorage.json", "r") as file:
-        dictionarydata = json.load(file)
-        for key in dictionarydata:
-            print("KEY:", key)
-        for subkey in dictionarydata[key]:
-            #Shit doesn't work yet :PPPP
-            print(subkey, subkey.values())
-
-
-
-#Menu interface
-def coursemenu():
-    while True:
-        print(
-            "---- Awesome Interface for courses!! ----\n"
-            "Press 1 to add a course\n"
-            "Press 2 to edit a course\n"
-            "Press 3 to remove a course\n"
-            "Press 4 to view existing courses\n"
-            "Press 5 to return to LMS Menu\n"
-        )
-
-        viewcourse_selection = input("Choose an option: ")
-
-        #Validation block
+        # Delete confirmation
         while True:
-            if viewcourse_selection.isalpha():
-                print("Option cannot contain letters.")
-                viewcourse_selection = input("Choose an option: ")
-            elif viewcourse_selection == "":
-                print("Option cannot be empty.")
-                viewcourse_selection = input("Choose an option: ")
-            elif viewcourse_selection in ("1", "2", "3", "4", "5"):
-                break
-            else:
-                print("Invalid option")
-                viewcourse_selection = input("Choose an option: ")
+            if deletecourse_input in coursedata and deletecourse_input != "":
+                deletecourse_confirmation = input("Are you sure you would like to delete "f"{deletecourse_input}? (Y/N): ")
+                if deletecourse_confirmation.upper() == "Y":
+                    coursedata.__delitem__(deletecourse_input)
+                    print("\nCourse has been removed. Saving and returning to Main Menu...\n")
+                    break
+                elif deletecourse_confirmation.upper() == "N":
+                    print("\nCourse deletion cancelled. Returning to Main Menu...\n")
+                    return
+                else:
+                    print("Input is invalid. Input Y or N.")
 
-        #Selects a function or returns to Main Menu
-        if viewcourse_selection == "1":
-            addcourse()
-        elif viewcourse_selection == "2":
-            updatecourse()
-        elif viewcourse_selection == "3":
-            deletecourse()
-        elif viewcourse_selection == "4":
-            viewcourse()
-        elif viewcourse_selection == "5":
-            print("Returning to LMS Menu...")
-            #Return back to LTs Main Menu
-            break
+        # Save to External File
+        # Saving is placed here to ensure the data has been properly validated.
+        save_coursedata(coursedata)
+        return
+# Allows admin to delete a course, confirmation is asked to the admin.
 
-coursemenu()
+# Function for viewing courses
+def viewcourse(coursedata):
 
+    counter = 1
+    if coursedata == {}:
+        print("\nNo courses available to view at this time.")
+    for key, value in coursedata.items():
+        formattedcoursedata = (f"Course: {key}\n"
+                f"Course Name: {value["courname"]}\n"
+                f"Course Instructor: {value["courinstructor"]}\n"
+                f"Course Duration: {value["courduration"]}\n"
+                f"Course Fee: {value["courfee"]}\n"
+                f"Course Capacity: {value["courcapacity"]}\n")
+        print(f"{counter}.")
+        print(formattedcoursedata)
+        counter += 1
+# Formats courses from cmstorage.txt into clean blocks of string.
