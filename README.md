@@ -9,13 +9,13 @@ A command-line management system built in Python for managing members, courses, 
 ### Mandatory Functions
 * **Wong Li Ting (TP174742):** Resources Management, Main Menu
 * **Chin Jun Xiang (TPXXXXXX):** Member Management
-* **Lee Jun Xuan (TPXXXXXX):** Course Management
+* **Lee Junn Xuan (TPXXXXXX):** Course Management
 * **Yap Kai Bin (TPXXXXXX):** Enrollment Management
 
 ### Additional Features
 * **Wong Li Ting (TP174742):** Login Menu, Multi-field Resource Filtering/Searching, Automatic File Backup & Undo (`rr_filebackup.py`)
 * **Chin Jun Xiang (TPXXXXXX):** Login Menu (PBKDF2 Password Hashing & Salting), Auto-generated Member IDs (`M0001`, `M0002`, ...)
-* **Lee Jun Xuan (TPXXXXXX):** Course Capacity & Maximum Course Limit Check (Max 20 courses)
+* **Lee Junn Xuan (TPXXXXXX):** Course Capacity & Maximum Course Limit Check (Max 20 courses)
 * **Yap Kai Bin (TPXXXXXX):** Text-file Audit Log of Daily Operations (`activity.log`), Auto-generated Enrollment IDs (`E001`, `E002`, ...)
 
 ---
