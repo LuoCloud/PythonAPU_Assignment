@@ -4,7 +4,8 @@ import os
 from member import membermenu
 from course import coursemenu
 from enrollment import enrollmentmenu
-from resources import resourcemenu, filtering
+from resources import resourcemenu
+from search_filter import filtering
 from rr_filebackup import filemenu
 
 def infomenu(username):

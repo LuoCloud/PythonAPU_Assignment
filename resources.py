@@ -114,74 +114,6 @@ def get_status(prompt):
         status = get(prompt, "Status")
     return status
 
-# ---- Filter by more than one field ---- #
-def filtering(username):
-    options = ["Members", "Courses", "Enrollments", "Resources"]
-    while True:
-        print("\n----! FILTER !----")
-        print("Which data do you want to filter?")
-        for i in range(len(options)):
-            print(f" {i + 1}. {options[i]}")
-        choice = input("Number (b to go back): ").strip()
-        if choice in ("b", "B"):
-            return
-        if not choice.isdigit() or not 1 <= int(choice) <= len(options):
-            print("Invalid choice.")
-        elif options[int(choice) - 1] == "Resources":
-            filter_resources()
-        else:
-            print(f"{options[int(choice) - 1]} filter is not available yet.")
-
-def filter_resources():
-    records = load()
-    print("Please enter...")
-    choice = input("(c)ontinue, (b)ack: ")
-    while choice not in ("b", "B"):
-        if choice in ("c", "C"):
-            print("Which fields do you want to filter by? (e.g. 3,5 for Type + Status)")
-            for i in range(len(FIELDS)):
-                print(f" {i + 1}. {FIELDS[i]}")
-            raw = input("Numbers separated by commas: ").strip()
-
-            picks = []
-            valid = True
-            for part in raw.split(","):
-                part = part.strip()
-                if part.isdigit() and 1 <= int(part) <= len(FIELDS):
-                    if FIELDS[int(part) - 1] not in picks:
-                        picks.append(FIELDS[int(part) - 1])
-                else:
-                    valid = False
-
-            if not valid or len(picks) == 0:
-                print("Invalid choice.")
-            else:
-                conditions = {}
-                for field in picks:
-                    value = ""
-                    while value == "":
-                        value = input(f"{field}: ").strip().lower()
-                    conditions[field] = value
-
-                results = []
-                for record in records:
-                    match = True
-                    for field in conditions:
-                        cell = record[FIELDS.index(field)].lower()
-                        if field == "Quantity" or field == "Status":
-                            if cell != conditions[field]:
-                                match = False
-                        elif conditions[field] not in cell:
-                            match = False
-                    if match:
-                        results.append(record)
-
-                show_tables(results)
-                print(len(results), "result(s) found.")
-        else:
-            print("Invalid command.")
-        choice = input("(c)ontinue, (b)ack: ")
-
 # ---- Main Functions ---- #
 # ---- Create ---- #
 def create(username):
@@ -216,17 +148,13 @@ def create(username):
 def read(username):
     records = load()
     print("Please enter...")
-    choice = input("(a)ll, (s)earch by ID/name/type, (f)ilter, (b)ack: ")
+    choice = input("(a)ll, (s)earch by ID/name/type, (b)ack: ")
     while choice not in ("q", "Q"):
-        while choice not in ("a", "A", "s", "S", "b", "B", "f", "F"):
-            choice = input("Please enter (a)ll / (s)earch / (f)ilter / (b)ack: ")
+        while choice not in ("a", "A", "s", "S", "b", "B"):
+            choice = input("Please enter (a)ll / (s)earch / (b)ack: ")
         if choice in ("a", "A"):
             openfile()
         elif choice in ("b", "B"):
-            back(username)
-            return
-        elif choice in ("f", "F"):
-            filtering(username)
             back(username)
             return
         elif choice in ("s", "S"):
@@ -239,7 +167,7 @@ def read(username):
                 if keyword in line[0].lower() or keyword in line[1].lower() or keyword in line[2].lower():
                     matches.append(line)
             show_tables(matches)
-        choice = input("(a)ll, (s)earch by ID/name/type, (f)ilter, (b)ack: ")
+        choice = input("(a)ll, (s)earch by ID/name/type, (b)ack: ")
     exit
 
 # ---- Edit ---- #

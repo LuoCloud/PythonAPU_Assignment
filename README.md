@@ -9,13 +9,13 @@ A command-line management system built in Python for managing members, courses, 
 ### Mandatory Functions
 * **Wong Li Ting (TP174742):** Resources Management, Main Menu
 * **Chin Jun Xiang (TPXXXXXX):** Member Management
-* **Lee Junn Xuan (TPXXXXXX):** Course Management
+* **Lee Jun Xuan (TPXXXXXX):** Course Management
 * **Yap Kai Bin (TPXXXXXX):** Enrollment Management
 
 ### Additional Features
-* **Wong Li Ting (TP174742):** Login Menu, Multi-field Resource Filtering/Searching, Automatic File Backup & Undo (`rr_filebackup.py`)
+* **Wong Li Ting (TP174742):** Login Menu, Unified Multi-field Filtering & Searching (`search_filter.py` accessed via Main Menu -> `(o)ther` -> `(f)ilter` for Members, Courses, Enrollments, and Resources), Automatic File Backup & Undo (`rr_filebackup.py`)
 * **Chin Jun Xiang (TPXXXXXX):** Login Menu (PBKDF2 Password Hashing & Salting), Auto-generated Member IDs (`M0001`, `M0002`, ...)
-* **Lee Junn Xuan (TPXXXXXX):** Course Capacity & Maximum Course Limit Check (Max 20 courses)
+* **Lee Jun Xuan (TPXXXXXX):** Course Capacity & Maximum Course Limit Check (Max 20 courses)
 * **Yap Kai Bin (TPXXXXXX):** Text-file Audit Log of Daily Operations (`activity.log`), Auto-generated Enrollment IDs (`E001`, `E002`, ...)
 
 ---
@@ -29,7 +29,8 @@ A command-line management system built in Python for managing members, courses, 
 * **`course.py` & `cmdatabase.py`**: Manages Course CRUD operations, course capacity checks, and persistent storage in `cmstorage.txt`.
 * **`enrollment.py`**: Manages student course enrollments, status updates (`Active`, `Completed`, `Withdrawn`), and enrollment searches.
 * **`audit_logger.py`**: Records timestamped `ENROLL`, `UPDATE`, and `DELETE` actions to `activity.log`.
-* **`resources.py` & `rr_filebackup.py`**: Manages Resource CRUD operations, multi-field filtering, and automatic `_backup.txt` file creation/restoration.
+* **`search_filter.py`**: Dedicated search and multi-field filtering module for Members (Admin-only), Courses, Enrollments, and Resources, accessed centrally from the Main Menu (`(o)ther -> (f)ilter`).
+* **`resources.py` & `rr_filebackup.py`**: Manages Resource CRUD operations and automatic `_backup.txt` file creation/restoration.
 
 ### Data Storage Files (`.txt` / `.log`)
 * **`admins.txt`**: Stores administrator usernames, random salts, and PBKDF2 password hashes.
